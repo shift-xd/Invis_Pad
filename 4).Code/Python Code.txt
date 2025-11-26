@@ -1,0 +1,36 @@
+import serial
+import subprocess
+
+PORT = "/dev/ttyUSB0"
+BAUD = 115200
+
+ser = serial.Serial(PORT, BAUD)
+print("Listening for tap commands...")
+
+def media_action(cmd):
+    if cmd == "BACK_10":
+        subprocess.run(["playerctl", "position", "10-"])
+
+    elif cmd == "FORWARD_10":
+        subprocess.run(["playerctl", "position", "10+"])
+
+    elif cmd == "PLAY_PAUSE":
+        subprocess.run(["playerctl", "play-pause"])
+
+while True:
+line = ser.readline().decode(errors="ignore").strip()
+
+    if not line:
+        continue
+
+    print("SERIAL:", line)
+
+    if "BACK_10" in line:
+        media_action("BACK_10")
+
+    elif "FORWARD_10" in line:
+        media_action("FORWARD_10")
+
+    elif "PLAY_PAUSE" in line:
+        media_action("PLAY_PAUSE")
+

@@ -1,0 +1,106 @@
+#include <Wire.h>
+#include <MPU6050.h>
+
+MPU6050 mpu;
+
+int16_t ax, ay, az;
+float lastAX = 0, lastAY = 0, lastAZ = 0;
+
+unsigned long lastTapTime = 0;
+unsigned long lastShock = 0;
+
+int tapCount = 0;
+bool waitingForFinal = false;
+
+void setup() {
+  Serial.begin(115200);
+  Wire.begin();
+
+  mpu.initialize();
+  if (!mpu.testConnection()) {
+    Serial.println("MPU NOT CONNECTED");
+    while (1);
+  }
+
+  Serial.println("MEDIA TAP CONTROLLER READY (ULTRA SENSITIVE)");
+}
+
+void loop() {
+  mpu.getAcceleration(&ax, &ay, &az);
+
+  float AX = ax / 16384.0;
+  float AY = ay / 16384.0;
+  float AZ = az / 16384.0;
+
+  float SX = AX - lastAX;
+  float SY = AY - lastAY;
+  float SZ = AZ - lastAZ;
+
+  lastAX = AX;
+  lastAY = AY;
+  lastAZ = AZ;
+
+  unsigned long now = millis();
+
+  // -----------------------------------------------------
+  // ULTRA SENSITIVE DETECTION (detects micro taps)
+  // -----------------------------------------------------
+
+  // Energy level — lowered a lot
+  float energy = SX*SX + SY*SY + SZ*SZ;
+
+  bool tapDetected = false;
+
+  // Lightweight tap threshold
+  if (energy > 0.010)      // super sensitive (was 0.020)
+    tapDetected = true;
+
+  // Reject tiny micro-noise
+  if (energy < 0.002)
+    tapDetected = false;
+
+  // Require at least one axis change — lowered threshold
+  if (!(abs(SX) > 0.06 || abs(SY) > 0.06 || abs(SZ) > 0.06))
+    tapDetected = false;
+
+  // Prevent rapid-bounce retrigger
+  if (now - lastShock < 50)
+    tapDetected = false;
+
+  // -----------------------------------------------------
+  // TAP DETECTED
+  // -----------------------------------------------------
+  if (tapDetected) {
+    lastShock = now;
+
+    if (now - lastTapTime < 300) 
+      tapCount++;
+    else 
+      tapCount = 1;
+
+    lastTapTime = now;
+    waitingForFinal = true;
+  }
+
+  // -----------------------------------------------------
+  // FINAL TAP DECISION
+  // -----------------------------------------------------
+  if (waitingForFinal && (now - lastTapTime) > 260) {
+
+    if (tapCount == 2) {
+      Serial.println("BACK_10");
+    }
+    else if (tapCount == 3) {
+      Serial.println("PLAY_PAUSE");
+    }
+    else if (tapCount == 4) {
+      Serial.println("FORWARD_10");
+    }
+
+    tapCount = 0;
+    waitingForFinal = false;
+  }
+
+  delay(1);
+}
+
