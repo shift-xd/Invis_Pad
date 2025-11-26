@@ -5,6 +5,7 @@ Invis Pad makes use of an MPU6050 Accerometer to turn your desk into an actual m
 you can control media or pc functions with it like play pause forward 10 secs etc...
 
 ## INVIS PAD VIDEO || DEMO LINKZZ
+Watch Thizz -->   https://youtu.be/IqekBNT2MJc
 
 ## INVIS PAD 
 <img width="1173" height="666" alt="IMage Of PCB With Components " src="https://github.com/user-attachments/assets/ad1eab6a-48ee-454a-85d9-db1b6af44965" />
