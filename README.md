@@ -8,6 +8,8 @@ you can control media or pc functions with it like play pause forward 10 secs et
 Watch Thizz -->   https://youtu.be/IqekBNT2MJc
 
 ## INVIS PAD 
+<img width="1173" height="666" alt="image" src="https://github.com/user-attachments/assets/1933ec44-0650-45fc-907f-8c71c371b54b" />
+
 <img width="1173" height="666" alt="IMage Of PCB With Components " src="https://github.com/user-attachments/assets/ad1eab6a-48ee-454a-85d9-db1b6af44965" />
 
 ## INVIS PAD PCB
